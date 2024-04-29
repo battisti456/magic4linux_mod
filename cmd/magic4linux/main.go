@@ -12,7 +12,7 @@ import (
 
 	"github.com/bendahl/uinput"
 
-	"github.com/mafredri/magic4linux/m4p"
+	"github.com/battisti456/magic4linux_mod/m4p"
 )
 
 const (
@@ -88,6 +88,51 @@ func connect(ctx context.Context, dev m4p.DeviceInfo, kbd uinput.Keyboard, mouse
 		case m4p.InputMessage:
 			log.Printf("connect: got %s: %v", m.Type, m.Input)
 
+			//Custom mapping
+			is_key := true
+			key := m.Input.Parameters.KeyCode
+			switch key {//reference https://github.com/bendahl/uinput/blob/master/keycodes.go
+			case m4p.KeyWheelPressed:
+				key = uinput.KeyEnter
+			case m4p.KeyChannelUp:
+				key = uinput.KeyPageup
+			case m4p.KeyChannelDown:
+				key = uinput.KeyPagedown
+			case m4p.KeyLeft:
+				key = uinput.KeyLeft
+			case m4p.KeyUp:
+				key = uinput.KeyUp
+			case m4p.KeyRight:
+				key = uinput.KeyRight
+			case m4p.KeyDown:
+				key = uinput.KeyDown
+			case m4p.KeyRed:
+				is_key = false
+				if m.Input.Parameters.IsDown {
+					tp.LeftPress()
+				} else {
+					tp.LeftRelease()
+				}
+			case m4p.KeyGreen:
+				is_key = false
+				if m.Input.Parameters.IsDown {
+					tp.RightPress()
+				} else {
+					tp.RightRelease()
+				}
+			case m4p.KeyYellow:
+				key = uinput.KeyF11
+			case m4p.KeyBlue:
+				key = uinput.KeyEsc
+			}
+			if is_key {
+				if m.Input.Parameters.IsDown {
+					kbd.KeyDown(key)
+				} else {
+					kbd.KeyUp(key)
+				}
+			}
+			/*
 			// PoC Kodi keyboard mapping.
 			key := m.Input.Parameters.KeyCode
 			switch key {
@@ -142,6 +187,8 @@ func connect(ctx context.Context, dev m4p.DeviceInfo, kbd uinput.Keyboard, mouse
 			} else {
 				kbd.KeyUp(key)
 			}
+			*/
+
 		case m4p.RemoteUpdateMessage:
 			// log.Printf("connect: got %s: %s", m.Type, hex.EncodeToString(m.RemoteUpdate.Payload))
 
