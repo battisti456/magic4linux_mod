@@ -227,6 +227,7 @@ func connect(ctx context.Context, dev m4p.DeviceInfo, kbd uinput.Keyboard, mouse
 			}
 
 		case m4p.WheelMessage:
+			log.Printf("scroll: %d",m.Wheel.Delta)
 			mouse.Wheel(false, m.Wheel.Delta)
 
 		default:
