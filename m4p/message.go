@@ -101,7 +101,7 @@ type Wheel struct {
 func decode(b []byte) (Message, error) {
 	var m Message
 	dec := json.NewDecoder(bytes.NewReader(b))
-	dec.DisallowUnknownFields()
+	//dec.DisallowUnknownFields()
 	if err := dec.Decode(&m); err != nil {
 		log.Printf("m4p: decode: bad data: %s", b)
 		return Message{}, err
